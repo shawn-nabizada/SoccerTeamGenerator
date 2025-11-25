@@ -1,0 +1,62 @@
+@model SoccerApp.Models.Player
+@{
+    ViewData["Title"] = "Add Player";
+}
+
+<div class="container mt-4" style="max-width: 800px;">
+    <div class="card shadow border-0">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0"><i class="fa-solid fa-user-plus me-2"></i>New Player Profile</h4>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Name" class="form-label fw-bold">Full Name</label>
+                    <input asp-for="Name" class="form-control form-control-lg" placeholder="e.g. Lionel Messi" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <h5 class="text-muted border-bottom pb-2 mb-3">Skill Assessment (1-100)</h5>
+                
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="BallControl" class="form-label">Ball Control</label>
+                        <input asp-for="BallControl" class="form-control" type="number" min="1" max="100" />
+                        <span asp-validation-for="BallControl" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="PassingAccuracy" class="form-label">Passing</label>
+                        <input asp-for="PassingAccuracy" class="form-control" type="number" min="1" max="100" />
+                        <span asp-validation-for="PassingAccuracy" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Dribbling" class="form-label">Dribbling</label>
+                        <input asp-for="Dribbling" class="form-control" type="number" min="1" max="100" />
+                        <span asp-validation-for="Dribbling" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DefensiveAwareness" class="form-label">Defending</label>
+                        <input asp-for="DefensiveAwareness" class="form-control" type="number" min="1" max="100" />
+                        <span asp-validation-for="DefensiveAwareness" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Shooting" class="form-label">Shooting</label>
+                        <input asp-for="Shooting" class="form-control" type="number" min="1" max="100" />
+                        <span asp-validation-for="Shooting" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                    <a asp-action="Index" class="btn btn-outline-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-success px-4">Save Player</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

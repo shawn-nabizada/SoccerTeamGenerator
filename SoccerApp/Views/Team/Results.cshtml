@@ -1,0 +1,45 @@
+@model List<List<SoccerApp.Models.Player>>
+@{
+    ViewData["Title"] = "Generated Teams";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-trophy text-warning me-2"></i>Generated Teams</h2>
+        <a asp-action="Index" class="btn btn-outline-dark">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Roster
+        </a>
+    </div>
+
+    <div class="row">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            var team = Model[i];
+            var teamTotal = team.Sum(p => p.OverallScore);
+            var avgScore = team.Any() ? team.Average(p => p.OverallScore) : 0;
+
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow border-0">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Team @(i + 1)</h5>
+                        <span class="badge bg-light text-dark">Total: @teamTotal.ToString("0")</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            @foreach (var p in team)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-secondary">@p.Name</span>
+                                    <span class="badge bg-light text-dark border">@p.OverallScore.ToString("0")</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-light text-center">
+                        <small class="text-muted">Average Skill: <strong>@avgScore.ToString("0.0")</strong></small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

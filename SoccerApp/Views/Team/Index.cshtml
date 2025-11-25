@@ -1,0 +1,218 @@
+@model List<SoccerApp.Models.Player>
+@{
+    ViewData["Title"] = "Team Roster";
+}
+
+<!-- Header Area -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="display-6 fw-bold"><i class="fa-solid fa-users me-2"></i>Player Roster</h1>
+        <p class="text-muted">Select players and generate balanced teams.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-success btn-lg shadow-sm">
+        <i class="fa-solid fa-plus me-1"></i> Add Player
+    </a>
+</div>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> @ViewBag.Error
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<form asp-action="Generate" method="post" id="rosterForm">
+    <!-- 1. CONTROLS DASHBOARD -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body bg-light rounded">
+            <div class="row g-3">
+                <!-- A. Generate Settings -->
+                <div class="col-md-3 border-end">
+                    <label class="form-label fw-bold small text-uppercase text-secondary">Teams to Generate</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fa-solid fa-layer-group"></i></span>
+                        <input type="number" name="numberOfTeams" class="form-control" value="2" min="2" max="10" required />
+                    </div>
+                </div>
+                
+                <!-- B. Search & Filter -->
+                <div class="col-md-7">
+                    <label class="form-label fw-bold small text-uppercase text-secondary">Search & Filter</label>
+                    <div class="d-flex gap-2">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search by name..." />
+                        </div>
+                        <select id="positionFilter" class="form-select w-50">
+                            <option value="All">All Positions</option>
+                            <option value="GK">Goalkeepers</option>
+                            <option value="Defender">Defenders</option>
+                            <option value="Midfielder">Midfielders</option>
+                            <option value="Striker">Strikers</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- C. Action Button -->
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">
+                        <i class="fa-solid fa-bolt me-1"></i> Generate
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DATA TABLE -->
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive" style="max-height: 700px; overflow-y: auto;">
+            <table class="table table-hover align-middle mb-0" id="playerTable">
+                <thead class="table-dark sticky-top">
+                    <tr>
+                        <th class="ps-3" style="width: 50px;">
+                            <input type="checkbox" id="selectAll" class="form-check-input" style="cursor:pointer;" />
+                        </th>
+                        <th style="cursor:pointer;" onclick="sortTable(1)">Player Name <i class="fa-solid fa-sort small ms-1"></i></th>
+                        <th style="cursor:pointer;" onclick="sortTable(2)">Position <i class="fa-solid fa-sort small ms-1"></i></th>
+                        <th style="cursor:pointer;" onclick="sortTable(3)">OVR <i class="fa-solid fa-sort small ms-1"></i></th>
+                        <th style="width: 20%;">Skills</th>
+                        <th class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr class="player-row" data-position="@Model[i].Position">
+                            <td class="ps-3">
+                                <input type="checkbox" asp-for="@Model[i].IsSelected" class="form-check-input player-checkbox" />
+                                <input type="hidden" asp-for="@Model[i].Id" />
+                            </td>
+                            <td class="fw-bold text-primary player-name">@Model[i].Name</td>
+                            <td><span class="badge bg-light text-dark border">@Model[i].Position</span></td>
+                            <td class="fw-bold player-score">@Model[i].OverallScore.ToString("0.0")</td>
+                            <td>
+                                @{
+                                    var color = Model[i].PlayerRank switch {
+                                        1 => "bg-success",
+                                        2 => "bg-primary",
+                                        3 => "bg-info",
+                                        4 => "bg-warning",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar @color" role="progressbar" 
+                                         style="width: @(Model[i].OverallScore)%;" ></div>
+                                </div>
+                            </td>
+                            <td class="text-end pe-3">
+                                <a asp-action="Delete" asp-route-id="@Model[i].Id" class="text-secondary"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-muted small">
+            Showing <span id="visibleCount">@Model.Count</span> of @Model.Count players
+        </div>
+    </div>
+</form>
+
+<!-- 3. JAVASCRIPT LOGIC -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const positionFilter = document.getElementById("positionFilter");
+        const tableRows = document.querySelectorAll(".player-row");
+        const visibleCountSpan = document.getElementById("visibleCount");
+        const selectAllCheckbox = document.getElementById("selectAll");
+
+        // --- FILTER FUNCTION ---
+        function filterTable() {
+            const searchText = searchInput.value.toLowerCase();
+            const positionValue = positionFilter.value;
+            let visibleCount = 0;
+
+            tableRows.forEach(row => {
+                const name = row.querySelector(".player-name").textContent.toLowerCase();
+                const position = row.getAttribute("data-position");
+                
+                const matchesSearch = name.includes(searchText);
+                const matchesPosition = positionValue === "All" || position === positionValue;
+
+                if (matchesSearch && matchesPosition) {
+                    row.style.display = "";
+                    visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+            visibleCountSpan.textContent = visibleCount;
+        }
+
+        // Event Listeners
+        searchInput.addEventListener("keyup", filterTable);
+        positionFilter.addEventListener("change", filterTable);
+
+        // --- SELECT ALL FUNCTION ---
+        // Only selects VISIBLE rows to respect filters
+        selectAllCheckbox.addEventListener("change", function () {
+            const isChecked = this.checked;
+            tableRows.forEach(row => {
+                if (row.style.display !== "none") {
+                    const cb = row.querySelector(".player-checkbox");
+                    cb.checked = isChecked;
+                }
+            });
+        });
+    });
+
+    // --- SORT FUNCTION (Simple Bubble Sort for table) ---
+    function sortTable(columnIndex) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("playerTable");
+        switching = true;
+        dir = "asc"; 
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            // Loop through all table rows (except the headers)
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[columnIndex];
+                y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                
+                // Check if numeric or text sort
+                let xVal = x.textContent.trim();
+                let yVal = y.textContent.trim();
+                
+                let isNumeric = !isNaN(parseFloat(xVal)) && isFinite(xVal);
+
+                if (dir == "asc") {
+                    if (isNumeric ? parseFloat(xVal) > parseFloat(yVal) : xVal.toLowerCase() > yVal.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (isNumeric ? parseFloat(xVal) < parseFloat(yVal) : xVal.toLowerCase() < yVal.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount ++; 
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>

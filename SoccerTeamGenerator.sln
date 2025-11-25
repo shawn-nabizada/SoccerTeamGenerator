@@ -1,0 +1,30 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerApp", "SoccerApp\SoccerApp.csproj", "{B68D4608-B6DB-B5A4-EECE-72E1170F54DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoccerApp.Tests", "SoccerApp.Tests\SoccerApp.Tests.csproj", "{5556C34E-F04B-43DB-889A-738BC71A6B7D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B68D4608-B6DB-B5A4-EECE-72E1170F54DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B68D4608-B6DB-B5A4-EECE-72E1170F54DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B68D4608-B6DB-B5A4-EECE-72E1170F54DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B68D4608-B6DB-B5A4-EECE-72E1170F54DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5556C34E-F04B-43DB-889A-738BC71A6B7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5556C34E-F04B-43DB-889A-738BC71A6B7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5556C34E-F04B-43DB-889A-738BC71A6B7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5556C34E-F04B-43DB-889A-738BC71A6B7D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {47622F0F-D6AA-41A8-BBC6-E497C1B14ABB}
+	EndGlobalSection
+EndGlobal

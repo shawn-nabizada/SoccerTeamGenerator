@@ -1,0 +1,35 @@
+services:
+  # Service 1: The Database
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: soccer_db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=StrongPass123!
+    ports:
+      - "1433:1433"
+    networks:
+      - soccer_net
+    volumes:
+      - sql_data_volume:/var/opt/mssql
+
+  # Service 2: The Web Application
+  web:
+    build: .
+    container_name: soccer_web
+    ports:
+      - "5000:8080" # Maps localhost:5000 to container:8080
+    environment:
+      # CRITICAL: We use 'Server=db' because 'db' is the service name above
+      - ConnectionStrings__DefaultConnection=Server=db;Database=SoccerDb;User Id=sa;Password=StrongPass123!;TrustServerCertificate=True;
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - db
+    networks:
+      - soccer_net
+
+networks:
+  soccer_net:
+
+volumes:
+  sql_data_volume:
