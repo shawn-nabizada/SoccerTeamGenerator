@@ -12,10 +12,26 @@
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                <div class="mb-4">
-                    <label asp-for="Name" class="form-label fw-bold">Full Name</label>
-                    <input asp-for="Name" class="form-control form-control-lg" placeholder="e.g. Lionel Messi" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                <div class="row mb-4">
+                    <!-- NAME INPUT -->
+                    <div class="col-md-8">
+                        <label asp-for="Name" class="form-label fw-bold">Full Name</label>
+                        <input asp-for="Name" class="form-control form-control-lg" placeholder="e.g. Lionel Messi" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <!-- NEW POSITION INPUT -->
+                    <div class="col-md-4">
+                        <label asp-for="Position" class="form-label fw-bold">Position</label>
+                        <select asp-for="Position" class="form-select form-select-lg">
+                            <option value="">Select...</option>
+                            <option value="GK">Goalkeeper</option>
+                            <option value="Defender">Defender</option>
+                            <option value="Midfielder">Midfielder</option>
+                            <option value="Striker">Striker</option>
+                        </select>
+                        <span asp-validation-for="Position" class="text-danger"></span>
+                    </div>
                 </div>
 
                 <h5 class="text-muted border-bottom pb-2 mb-3">Skill Assessment (1-100)</h5>
