@@ -1,0 +1,81 @@
+@model SoccerApp.Models.Player
+
+@{
+    ViewData["Title"] = "Player Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm border-0" style="max-width: 800px; margin: 0 auto;">
+        
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+            <h2 class="h4 mb-0"><i class="fa-solid fa-user me-2"></i>@Model.Name</h2>
+            <span class="badge bg-primary fs-6">@Model.Position</span>
+        </div>
+
+        <div class="card-body bg-light">
+            <div class="row g-4">
+                
+                <div class="col-md-4 text-center border-end">
+                    <h5 class="text-muted text-uppercase small fw-bold mb-3">Overall Rating</h5>
+                    
+                    <div class="d-inline-flex align-items-center justify-content-center bg-white border rounded-circle shadow-sm" style="width: 120px; height: 120px;">
+                        <span class="display-4 fw-bold text-dark">@Model.OverallScore.ToString("0")</span>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="mb-1 text-muted small">Rank</p>
+                        @{
+                            var rankColor = Model.PlayerRank switch {
+                                1 => "text-success",
+                                2 => "text-primary",
+                                3 => "text-info",
+                                4 => "text-warning",
+                                _ => "text-secondary"
+                            };
+                            var rankText = Model.PlayerRank switch {
+                                1 => "Elite",
+                                2 => "Gold",
+                                3 => "Silver",
+                                4 => "Bronze",
+                                _ => "Reserve"
+                            };
+                        }
+                        <h3 class="@rankColor fw-bold">@rankText</h3>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <h5 class="text-muted text-uppercase small fw-bold mb-3 border-bottom pb-2">Skill Attributes</h5>
+
+                    @{
+                        void RenderStat(string label, int value, string colorClass = "bg-primary")
+                        {
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="fw-bold text-dark">@label</span>
+                                    <span class="fw-bold text-secondary">@value</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar @colorClass" role="progressbar" style="width: @value%" aria-valuenow="@value" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+                    @{ RenderStat("Ball Control", Model.BallControl, "bg-info"); }
+                    @{ RenderStat("Passing Accuracy", Model.PassingAccuracy, "bg-success"); }
+                    @{ RenderStat("Dribbling", Model.Dribbling, "bg-warning"); }
+                    @{ RenderStat("Defensive Awareness", Model.DefensiveAwareness, "bg-danger"); }
+                    @{ RenderStat("Shooting", Model.Shooting, "bg-primary"); }
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-white py-3">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Roster
+            </a>
+        </div>
+    </div>
+</div>

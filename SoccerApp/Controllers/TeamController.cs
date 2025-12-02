@@ -22,6 +22,23 @@ namespace SoccerApp.Controllers
             
             return View(players);
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var player = await _context.Players
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (player == null)
+            {
+                return NotFound();
+            }
+
+            return View(player);
+        }
         
         [HttpPost]
         public async Task<IActionResult> Generate(List<Player> players, int numberOfTeams)
@@ -43,13 +60,11 @@ namespace SoccerApp.Controllers
             return View("Results", teams);
         }
 
-        // GET: Team/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Team/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Player player)
@@ -63,7 +78,6 @@ namespace SoccerApp.Controllers
             return View(player);
         }
 
-        // GET: Team/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
@@ -72,7 +86,6 @@ namespace SoccerApp.Controllers
             return View(player);
         }
 
-        // POST: Team/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

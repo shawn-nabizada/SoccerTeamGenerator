@@ -88,7 +88,13 @@
                                 <input type="checkbox" asp-for="@Model[i].IsSelected" class="form-check-input player-checkbox" />
                                 <input type="hidden" asp-for="@Model[i].Id" />
                             </td>
-                            <td class="fw-bold text-primary player-name">@Model[i].Name</td>
+                            <td>
+                                <a asp-action="Details" 
+                                asp-route-id="@Model[i].Id" 
+                                class="fw-bold text-primary text-decoration-none player-name">
+                                @Model[i].Name
+                                </a>
+                            </td>
                             <td><span class="badge bg-light text-dark border">@Model[i].Position</span></td>
                             <td class="fw-bold player-score">@Model[i].OverallScore.ToString("0.0")</td>
                             <td>
